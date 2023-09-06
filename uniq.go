@@ -43,7 +43,6 @@ func ReadDate(line *[]string) error {
 }
 
 func main() {
-	var err error
 	var opts unique.Options
 	flag.BoolVar(&opts.Count, "c", false, unique.InfoCount)
 	flag.BoolVar(&opts.Double, "d", false, unique.InfoDouble)
@@ -60,16 +59,17 @@ func main() {
 	}
 
 	line := []string{}
-	if err = ReadDate(&line); err != nil {
+	if err := ReadDate(&line); err != nil {
 		fmt.Println(err)
 		unique.InfoErrorsInput()
 		return
 	}
 
-	if err = unique.Unique(&line, opts); err != nil {
+	if outString, err := unique.Unique(line, opts); err != nil {
 		fmt.Println(err)
 		unique.InfoErrorsInput()
 		return
 	}
 
+	fmt.Print(outString)
 }
