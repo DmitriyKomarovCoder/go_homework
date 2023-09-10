@@ -17,6 +17,7 @@ func ReadDate(line *[]string) error {
 
 	if fileName := flag.Arg(0); fileName != "" {
 		inputStream, err = os.Open(fileName)
+
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -42,6 +43,35 @@ func ReadDate(line *[]string) error {
 	return err
 }
 
+func writeDate(line []string) {
+	outputStream := os.Stdout
+	var err error
+
+	if fileName := flag.Arg(1); fileName != "" {
+		outputStream, err = os.Create(fileName)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		defer func() {
+			if err = outputStream.Close(); err != nil {
+				log.Fatal(err)
+			}
+		}()
+	}
+	writer := bufio.NewWriter(outputStream)
+
+	for _, str := range line {
+		if _, err = writer.WriteString(str + "\n"); err != nil {
+			log.Fatal(err)
+		}
+	}
+	if err = writer.Flush(); err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
 	var opts unique.Options
 	flag.BoolVar(&opts.Count, "c", false, unique.InfoCount)
@@ -65,11 +95,12 @@ func main() {
 		return
 	}
 
-	if outString, err := unique.Unique(line, opts); err != nil {
+	outString, err := unique.Unique(line, opts)
+	if err != nil {
 		fmt.Println(err)
 		unique.InfoErrorsInput()
 		return
 	}
 
-	fmt.Print(outString)
+	writeDate(outString)
 }
