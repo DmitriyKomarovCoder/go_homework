@@ -25,61 +25,59 @@ func cut(cutString string, opts Options) string {
 	if len(str) < opts.Strings {
 		return ""
 	}
+	return str[opts.Strings:]
+}
 
-	return str
+func uniqWorker(outString *[]string, lastStr string, count int, opts Options) {
+	switch {
+	case opts.Count:
+		*outString = append(*outString, strconv.Itoa(count)+" "+lastStr)
+
+	case opts.Double:
+		if count > 1 {
+			*outString = append(*outString, lastStr)
+		}
+
+	case opts.Unique:
+		if count == 1 {
+			*outString = append(*outString, lastStr)
+		}
+
+	default:
+		*outString = append(*outString, lastStr)
+	}
 }
 
 func Unique(line []string, opts Options) ([]string, error) {
-	var cout int
-	var isEqual bool
+	var strPotential string
 	outString := []string{}
-	line = append(line, " ")
+
 	if opts.Count && opts.Double || opts.Double && opts.Unique || opts.Count && opts.Unique {
-		return outString, errors.New("errors: no correct use flags")
+		return outString, errors.New("errors: No correct use flags")
 	}
 
+	count := 1
 	for i := 1; i < len(line); i++ {
-		cutPrevString := cut(line[i-1], opts)
-		cutString := cut(line[i], opts)
+		lastStr := cut(line[i-1], opts)
+		currentStr := cut(line[i], opts)
 
 		if opts.Ignorant {
-			cutPrevString = strings.ToUpper(cutPrevString)
-			cutString = strings.ToUpper(cutString)
+			currentStr = strings.ToUpper(currentStr)
+			lastStr = strings.ToUpper(lastStr)
 		}
 
-		if cutPrevString == cutString {
-			cout++
-			isEqual = true
-		} else {
-			isEqual = false
+		if currentStr == lastStr {
+			if count == 1 {
+				strPotential = line[i-1]
+			}
+			count++
+			continue
 		}
 
-		switch {
-		case opts.Count:
-			if !isEqual && cout > 0 {
-				outString = append(outString, strconv.Itoa(cout+1)+" "+line[i-1])
-				cout = 0
-			} else if !isEqual && cout == 0 {
-				outString = append(outString, strconv.Itoa(cout+1)+" "+line[i-1])
-			}
-		case opts.Double:
-			if !isEqual && cout > 0 { // TO DO
-				outString = append(outString, line[i-1])
-				cout = 0
-			}
-		case opts.Unique:
-			if !isEqual && cout == 0 {
-				outString = append(outString, line[i-1])
-			} else if !isEqual && cout > 0 {
-				cout = 0
-			}
-		default:
-			if !isEqual && cout > 0 {
-				outString = append(outString, line[i-1])
-			} else if !isEqual && cout == 0 {
-				outString = append(outString, line[i-1])
-			}
-		}
+		uniqWorker(&outString, strPotential, count, opts)
+		strPotential = line[i]
+		count = 1
 	}
+	uniqWorker(&outString, strPotential, count, opts)
 	return outString, nil
 }

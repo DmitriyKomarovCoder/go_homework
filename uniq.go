@@ -1,76 +1,13 @@
 package main
 
 import (
-	"bufio"
 	"errors"
 	"flag"
 	"fmt"
-	"log"
-	"os"
 
+	"github.com/DmitriyKomarovCoder/go_homework/stream"
 	"github.com/DmitriyKomarovCoder/go_homework/unique"
 )
-
-func ReadDate(line *[]string) error {
-	inputStream := os.Stdin
-	var err error
-
-	if fileName := flag.Arg(0); fileName != "" {
-		inputStream, err = os.Open(fileName)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		defer func() {
-			if err = inputStream.Close(); err != nil {
-				log.Fatal(err)
-			}
-		}()
-
-	}
-
-	scanner := bufio.NewScanner(inputStream)
-
-	for scanner.Scan() {
-		*line = append(*line, scanner.Text())
-	}
-
-	if err = scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-
-	return err
-}
-
-func writeDate(line []string) {
-	outputStream := os.Stdout
-	var err error
-
-	if fileName := flag.Arg(1); fileName != "" {
-		outputStream, err = os.Create(fileName)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		defer func() {
-			if err = outputStream.Close(); err != nil {
-				log.Fatal(err)
-			}
-		}()
-	}
-	writer := bufio.NewWriter(outputStream)
-
-	for _, str := range line {
-		if _, err = writer.WriteString(str + "\n"); err != nil {
-			log.Fatal(err)
-		}
-	}
-	if err = writer.Flush(); err != nil {
-		log.Fatal(err)
-	}
-}
 
 func main() {
 	var opts unique.Options
@@ -89,7 +26,7 @@ func main() {
 	}
 
 	line := []string{}
-	if err := ReadDate(&line); err != nil {
+	if err := stream.ReadDate(&line); err != nil {
 		fmt.Println(err)
 		unique.InfoErrorsInput()
 		return
@@ -102,5 +39,5 @@ func main() {
 		return
 	}
 
-	writeDate(outString)
+	stream.WriteData(outString)
 }
