@@ -13,8 +13,10 @@ func isOperator(operator string) bool {
 	return false
 }
 
-func isDigit(num string) bool {
+func isNumber(num string) bool {
 	if _, err := strconv.Atoi(string(num)); err == nil {
+		return true
+	} else if _, err := strconv.ParseFloat(num, 64); err == nil {
 		return true
 	}
 	return false
@@ -54,7 +56,7 @@ func parseString(line string) []string {
 
 	numBuff := ""
 	for _, val := range line {
-		if isDigit(string(val)) || string(val) == "." {
+		if isNumber(string(val)) || string(val) == "." {
 			numBuff += string(val)
 		} else {
 			if numBuff != "" {
@@ -97,7 +99,7 @@ func Calculate(line string) (float64, error) {
 	expression := parseString(line)
 	numberStack := stack.New()
 	for _, val := range expression {
-		if isDigit(val) {
+		if isNumber(val) {
 			numberStack.Push(val)
 		} else if isOperator(val) {
 			if numberStack.Len() < 2 {
