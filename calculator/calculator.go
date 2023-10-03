@@ -7,10 +7,7 @@ import (
 )
 
 func isOperator(operator string) bool {
-	if operator == "*" || operator == "+" || operator == "/" || operator == "-" {
-		return true
-	}
-	return false
+	return operator == "*" || operator == "+" || operator == "/" || operator == "-"
 }
 
 func isNumber(num string) bool {
@@ -109,9 +106,8 @@ func Calculate(line string) (float64, error) {
 			num2, _ := strconv.ParseFloat(numberStack.Pop(), 64)
 			num1, _ := strconv.ParseFloat(numberStack.Pop(), 64)
 
-			var res float64
-			var err error
-			if res, err = calculation(num1, num2, val); err != nil {
+			res, err := calculation(num1, num2, val)
+			if err != nil {
 				return 0, err
 			}
 			numberStack.Push(strconv.FormatFloat(res, 'f', 6, 64))
