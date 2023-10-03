@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func ReadDate(line *[]string) error {
+func ReadDate() ([]string, error) {
 	inputStream := os.Stdin
 	var err error
 
@@ -27,16 +27,16 @@ func ReadDate(line *[]string) error {
 	}
 
 	scanner := bufio.NewScanner(inputStream)
-
+	line := []string{}
 	for scanner.Scan() {
-		*line = append(*line, scanner.Text())
+		line = append(line, scanner.Text())
 	}
 
 	if err = scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 
-	return err
+	return line, err
 }
 
 func WriteData(line []string) {

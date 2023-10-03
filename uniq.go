@@ -25,8 +25,8 @@ func main() {
 		return
 	}
 
-	line := []string{}
-	if err := stream.ReadDate(&line); err != nil {
+	line, err := stream.ReadDate()
+	if err != nil {
 		fmt.Println(err)
 		unique.InfoErrorsInput()
 		return
