@@ -28,24 +28,25 @@ func cut(cutString string, opts Options) string {
 	return str[opts.Strings:]
 }
 
-func uniqWorker(outString *[]string, lastStr string, count int, opts Options) {
+func uniqWorker(outString []string, lastStr string, count int, opts Options) []string {
 	switch {
 	case opts.Count:
-		*outString = append(*outString, strconv.Itoa(count)+" "+lastStr)
+		outString = append(outString, strconv.Itoa(count)+" "+lastStr)
 
 	case opts.Double:
 		if count > 1 {
-			*outString = append(*outString, lastStr)
+			outString = append(outString, lastStr)
 		}
 
 	case opts.Unique:
 		if count == 1 {
-			*outString = append(*outString, lastStr)
+			outString = append(outString, lastStr)
 		}
 
 	default:
-		*outString = append(*outString, lastStr)
+		outString = append(outString, lastStr)
 	}
+	return outString
 }
 
 func Unique(line []string, opts Options) ([]string, error) {
@@ -74,10 +75,10 @@ func Unique(line []string, opts Options) ([]string, error) {
 			continue
 		}
 
-		uniqWorker(&outString, strPotential, count, opts)
+		outString = uniqWorker(outString, strPotential, count, opts)
 		strPotential = line[i]
 		count = 1
 	}
-	uniqWorker(&outString, strPotential, count, opts)
+	outString = uniqWorker(outString, strPotential, count, opts)
 	return outString, nil
 }
